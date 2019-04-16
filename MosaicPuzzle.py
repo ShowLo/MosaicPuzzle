@@ -50,7 +50,7 @@ class MosaicPuzzle(object):
             img = img.convert('RGB')
         pix = img.load()
         avg_r, avg_g, avg_b = 0, 0, 0
-        n = 1
+        n = 0
         for i in range(img.size[0]):
             for j in range(img.size[1]):
                 r, g, b = pix[i, j]
@@ -140,6 +140,20 @@ class MosaicPuzzle(object):
         else:
             return ''
 
+    @staticmethod
+    def RGB_distance(RGB1, RGB2):
+        '''
+        计算两个RGB颜色之间的色差
+        Calculate the chromatic aberration between two RGB colors
+        '''
+        R1, G1, B1 = RGB1
+        R2, G2, B2 = RGB2
+        r_mean = (R1 + R2) / 2
+        R = R1 - R2
+        G = G1 - G2
+        B = B1 - B2
+        return math.sqrt((2+r_mean/256)*(R**2) + 4*(G**2) + (2+(255-r_mean)/256)*(B**2))
+
     def find_by_RGB(self, sub_key):
         '''
         根据RGB模式找到最匹配的子图
@@ -150,7 +164,8 @@ class MosaicPuzzle(object):
         k = ''
         for key in self.all_image.keys():
             src_r, src_g, src_b = key.split("-")
-            cur_dif = abs(float(sub_r) - float(src_r)) + abs(float(sub_g) - float(src_g)) + abs(float(sub_b) - float(src_b))
+            #cur_dif = abs(float(sub_r) - float(src_r)) + abs(float(sub_g) - float(src_g)) + abs(float(sub_b) - float(src_b))
+            cur_dif = self.RGB_distance((float(src_r), float(src_g), float(src_b)), (float(sub_r), float(sub_g), float(sub_b)))
             if cur_dif < min_dif:
                 min_dif = cur_dif
                 k = key
@@ -265,6 +280,6 @@ class MosaicPuzzle(object):
         print("cost : %fs" % (time.time() - start))
 
 if __name__ == "__main__":
-    #mp = MosaicPuzzle(r'F:\OneDrive\OneDrive - mails.tsinghua.edu.cn\研究生作业\数据可视化\project1\dunhuang', r'1-rgb.jpg', r'F:\OneDrive\OneDrive - mails.tsinghua.edu.cn\研究生作业\数据可视化\project1\dunhuang\4_dunhuang_251_1.jpg', sub_image_width=50, sub_image_height=50, width_pixel_num=5, height_pixel_num=5, match_mode='RGB')
-    mp = MosaicPuzzle(r'F:\OneDrive\OneDrive - mails.tsinghua.edu.cn\研究生作业\数据可视化\project1\dunhuang', r'F:\class\数据可视化\output', r'F:\OneDrive\OneDrive - mails.tsinghua.edu.cn\研究生作业\数据可视化\project1\dunhuang', sub_image_width=50, sub_image_height=50, width_pixel_num=5, height_pixel_num=5, match_mode='RGB')
+    #mp = MosaicPuzzle(r'F:\OneDrive\OneDrive - mails.tsinghua.edu.cn\研究生作业\数据可视化\project1\dunhuang', r'1-rgb-1.jpg', r'F:\OneDrive\OneDrive - mails.tsinghua.edu.cn\研究生作业\数据可视化\project1\dunhuang\4_dunhuang_251_1.jpg', sub_image_width=20, sub_image_height=20, width_pixel_num=5, height_pixel_num=5, match_mode='RGB')
+    mp = MosaicPuzzle(r'F:\OneDrive\OneDrive - mails.tsinghua.edu.cn\研究生作业\数据可视化\project1\dunhuang', r'F:\class\数据可视化\output', r'F:\OneDrive\OneDrive - mails.tsinghua.edu.cn\研究生作业\数据可视化\project1\dunhuang', sub_image_width=20, sub_image_height=20, width_pixel_num=5, height_pixel_num=5, match_mode='RGB')
     mp.make()
